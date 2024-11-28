@@ -33,7 +33,7 @@
             border-radius: 16px;
             animation: fadeIn 1.2s ease;
             width: 100%;
-            max-width: calc(100% - 260px);
+            max-width: calc(100%);
             margin-left: 260px;
             position: relative;
             left: 0;

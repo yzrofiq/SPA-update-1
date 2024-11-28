@@ -13,7 +13,7 @@ class Pembayaran extends Model
 
     // Menambahkan atribut ke dalam array $fillable
     protected $fillable = [
-        'pelanggan_id',    // Pastikan ini ada untuk mass assignment
+        'user_id',    // Pastikan ini ada untuk mass assignment
         'tagihan_id',
         'tanggal_pembayaran',
         'jumlah_bayar',
@@ -32,4 +32,12 @@ class Pembayaran extends Model
     {
         return $this->belongsTo(Pelanggan::class);
     }
+
+
+    
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
 }

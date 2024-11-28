@@ -11,7 +11,7 @@ class Tagihan extends Model
 
     // Specify which fields can be mass assigned
     protected $fillable = [
-        'pelanggan_id',  // Add this field to allow mass assignment
+        'user_id',  // Add this field to allow mass assignment
         'bulan',
         'tahun',
         'jumlah_tagihan',
@@ -27,4 +27,16 @@ class Tagihan extends Model
     {
         return $this->hasMany(Pembayaran::class);
     }
+
+    public function pembayaran()
+{
+    return $this->hasMany(Pembayaran::class);
+}
+
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
 }

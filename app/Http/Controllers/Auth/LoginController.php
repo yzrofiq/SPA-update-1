@@ -54,8 +54,5 @@ class LoginController extends Controller
         if ($user->role === 'user') {
             return redirect('/user/dashboard');
         }
-
-        // Default redirect if no role is defined
-        return redirect('/home');
     }
 }

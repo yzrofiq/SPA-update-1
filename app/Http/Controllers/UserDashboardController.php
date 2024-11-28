@@ -21,7 +21,6 @@ class UserDashboardController extends Controller
         return view('user.dashboard', compact('tagihans', 'pembayarans'));
     }
 
-    // Add a new method for handling the "bayar" (payment) action
     public function createPayment($tagihanId)
     {
         // Fetch the authenticated user
@@ -34,7 +33,6 @@ class UserDashboardController extends Controller
         return view('user.payment.create', compact('tagihan'));
     }
 
-    // Add a method to handle the payment submission (optional if you want to process payments)
     public function storePayment(Request $request, $tagihanId)
     {
         // Fetch the authenticated user
@@ -49,7 +47,7 @@ class UserDashboardController extends Controller
         // Fetch the tagihan (bill)
         $tagihan = Tagihan::where('id', $tagihanId)->where('user_id', $user->id)->firstOrFail();
 
-        // Check if the payment is for the correct tagihan (e.g., not paid yet)
+        // Check if the payment is for the correct tagihan
         if ($tagihan->status == 1) {
             return redirect()->route('user.dashboard')->with('error', 'Tagihan sudah lunas!');
         }
@@ -60,11 +58,11 @@ class UserDashboardController extends Controller
             'tagihan_id' => $tagihan->id,
             'amount' => $request->amount,
             'payment_method' => $request->payment_method,
-            'status' => 'pending', // Assuming pending until confirmed
+            'status' => 'pending',
         ]);
 
         // Update the tagihan status to "paid"
-        $tagihan->status = 1; // Mark the bill as paid
+        $tagihan->status = 1;
         $tagihan->save();
 
         // Redirect the user to their dashboard with success message

@@ -39,25 +39,25 @@ class PelangganController extends Controller
         return view('pelanggan.create');
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string|max:255',
-            'nomor_telepon' => 'required|string|max:20',
-        ]);
-    
-        // Add the authenticated user's ID
-        Pelanggan::create([
-            'nama' => $request->input('nama'),
-            'alamat' => $request->input('alamat'),
-            'nomor_telepon' => $request->input('nomor_telepon'),
-            'user_id' => auth()->id(), // Add the logged-in user's ID
-        ]);
-    
-        return redirect()->route('pelanggans.index')->with('success', 'Pelanggan berhasil ditambahkan');
-    }
-    
+  public function store(Request $request)
+{
+    $request->validate([
+        'nama' => 'required|string|max:255',
+        'alamat' => 'required|string|max:255',
+        'nomor_telepon' => 'required|string|max:20',
+    ]);
+
+    // Add the authenticated user's ID
+    Pelanggan::create([
+        'nama' => $request->input('nama'),
+        'alamat' => $request->input('alamat'),
+        'nomor_telepon' => $request->input('nomor_telepon'),
+        'user_id' => auth()->id(), // Add the logged-in user's ID
+    ]);
+
+    return redirect()->route('pelanggans.index')->with('success', 'Pelanggan berhasil ditambahkan');
+}
+
 
     public function edit($id)
     {

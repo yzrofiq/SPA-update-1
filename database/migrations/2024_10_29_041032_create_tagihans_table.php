@@ -9,21 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('tagihans', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('pelanggan_id');
+            $table->id(); // BIGINT UNSIGNED PRIMARY KEY
+            $table->unsignedBigInteger('user_id'); // Foreign key ke tabel users
             $table->integer('bulan');
             $table->integer('tahun');
             $table->decimal('jumlah_tagihan', 10, 2);
             $table->boolean('status')->default(0); // 0: belum bayar, 1: sudah bayar
             $table->timestamps();
-    
-            $table->foreign('pelanggan_id')->references('id')->on('pelanggans')->onDelete('cascade');
+
+            // Foreign key constraint
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
-    
 
     /**
      * Reverse the migrations.

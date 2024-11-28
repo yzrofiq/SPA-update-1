@@ -33,7 +33,7 @@ html, body {
     border-radius: 16px;
     animation: fadeIn 1.2s ease;
     width: 100%; /* Ensure it takes the full width */
-    max-width: calc(100% - 260px); /* Adjust based on sidebar width */
+    max-width: calc(100% ); /* Adjust based on sidebar width */
     margin-left: 260px; /* Push the banner to the right */
     position: relative;
     left: 0;
@@ -68,6 +68,7 @@ html, body {
     color: #ecf0f1;
     transition: width 0.3s ease;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    
 }
 
 .sidebar h4 {
@@ -75,6 +76,7 @@ html, body {
     text-align: center;
     font-weight: bold;
     margin-bottom: 20px;
+    
 }
 
 .sidebar a {

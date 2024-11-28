@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Tagihan; // Import the Tagihan model
 use App\Models\Pelanggan; // Import the Pelanggan model
+use Illuminate\Support\Facades\Auth;
+
 
 class TagihanController extends Controller
 {
@@ -22,55 +24,53 @@ class TagihanController extends Controller
     
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'pelanggan_id' => 'required|exists:pelanggans,id',
-            'bulan' => 'required|integer|min:1|max:12',
-            'tahun' => 'required|integer|min:2000|max:' . date('Y'),
-            'jumlah_tagihan' => 'required|numeric|min:0',
-            'status' => 'required|in:0,1',  // Ensure status is either 0 or 1
-        ]);
+{
+    $request->validate([
+        'pelanggan_id' => 'required|exists:pelanggans,id',
+        'bulan' => 'required|integer|min:1|max:12',
+        'tahun' => 'required|integer|min:2000|max:' . date('Y'),
+        'jumlah_tagihan' => 'required|numeric|min:0',
+        'status' => 'required|in:0,1',  // Ensure status is either 0 or 1
+    ]);
 
-        // Save tagihan data
-        Tagihan::create([
-            'pelanggan_id' => $request->pelanggan_id,
-            'bulan' => $request->bulan,
-            'tahun' => $request->tahun,
-            'jumlah_tagihan' => $request->jumlah_tagihan,
-            'status' => $request->status,
-        ]);
+    // Use the authenticated user's ID
+    $userId = Auth::id(); 
 
-        return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil ditambahkan.');
-    }
+    // Save tagihan data
+    Tagihan::create([
+        'user_id' => $userId,  // Use logged-in user's ID
+        'bulan' => $request->bulan,
+        'tahun' => $request->tahun,
+        'jumlah_tagihan' => $request->jumlah_tagihan,
+        'status' => $request->status,
+    ]);
 
-    public function edit($id)
-    {
-        $tagihan = Tagihan::findOrFail($id); // Ensuring the tagihan exists
-        $pelanggans = Pelanggan::all(); // Retrieve all pelanggan for the dropdown
-        return view('tagihans.edit', compact('tagihan', 'pelanggans'));
-    }
+    return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil ditambahkan.');
+}
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'pelanggan_id' => 'required|exists:pelanggans,id',
-            'bulan' => 'required|integer|min:1|max:12',
-            'tahun' => 'required|integer|min:2000|max:' . date('Y'),
-            'jumlah_tagihan' => 'required|numeric|min:0',
-            'status' => 'required|in:0,1',  // Ensure status is either 0 or 1
-        ]);
 
-        $tagihan = Tagihan::findOrFail($id); // Ensure the tagihan exists
-        $tagihan->update([
-            'pelanggan_id' => $request->pelanggan_id,
-            'bulan' => $request->bulan,
-            'tahun' => $request->tahun,
-            'jumlah_tagihan' => $request->jumlah_tagihan,
-            'status' => $request->status,  // Update the status here
-        ]);
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',  // Validasi untuk user_id
+        'bulan' => 'required|integer|min:1|max:12',
+        'tahun' => 'required|integer|min:2000|max:' . date('Y'),
+        'jumlah_tagihan' => 'required|numeric|min:0',
+        'status' => 'required|in:0,1',  // Ensure status is either 0 or 1
+    ]);
 
-        return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil diperbarui.');
-    }
+    $tagihan = Tagihan::findOrFail($id); // Ensure the tagihan exists
+    $tagihan->update([
+        'user_id' => $request->user_id,
+        'bulan' => $request->bulan,
+        'tahun' => $request->tahun,
+        'jumlah_tagihan' => $request->jumlah_tagihan,
+        'status' => $request->status,  // Update the status here
+    ]);
+
+    return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil diperbarui.');
+}
+
 
     public function destroy($id)
     {

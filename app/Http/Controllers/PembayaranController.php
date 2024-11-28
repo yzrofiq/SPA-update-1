@@ -27,7 +27,7 @@ class PembayaranController extends Controller
     {
         // Validate request data
         $request->validate([
-            'pelanggan_id' => 'required|exists:pelanggans,id',
+            'user_id' => 'required|exists:user,id',
             'tagihan_id' => 'required|exists:tagihans,id',
             'tanggal_pembayaran' => 'required|date',
             'jumlah_bayar' => 'required|numeric',
@@ -35,7 +35,7 @@ class PembayaranController extends Controller
 
         // Save payment
         Pembayaran::create([
-            'pelanggan_id' => $request->pelanggan_id,
+            'user_id' => $request->user_id,
             'tagihan_id' => $request->tagihan_id,
             'tanggal_pembayaran' => $request->tanggal_pembayaran,
             'jumlah_bayar' => $request->jumlah_bayar,
@@ -62,7 +62,7 @@ class PembayaranController extends Controller
     {
         // Validate request data
         $request->validate([
-            'pelanggan_id' => 'required|exists:pelanggans,id',
+            'user_id' => 'required|exists:user,id',
             'tagihan_id' => 'required|exists:tagihans,id',
             'tanggal_pembayaran' => 'required|date',
             'jumlah_bayar' => 'required|numeric',
@@ -73,7 +73,7 @@ class PembayaranController extends Controller
 
         // Update payment details
         $pembayaran->update([
-            'pelanggan_id' => $request->pelanggan_id,
+            'user_id' => $request->user_id,
             'tagihan_id' => $request->tagihan_id,
             'tanggal_pembayaran' => $request->tanggal_pembayaran,
             'jumlah_bayar' => $request->jumlah_bayar,

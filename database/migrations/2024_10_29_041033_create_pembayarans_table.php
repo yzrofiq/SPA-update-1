@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('pembayarans', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('pelanggan_id'); // Tambahkan kolom pelanggan_id
+            $table->unsignedBigInteger('user_id'); // Tambahkan kolom pelanggan_id
             $table->unsignedBigInteger('tagihan_id');
             $table->date('tanggal_pembayaran');
             $table->decimal('jumlah_bayar', 10, 2);
             $table->timestamps();
     
             // Tambahkan foreign key untuk pelanggan_id dan tagihan_id
-            $table->foreign('pelanggan_id')->references('id')->on('pelanggans')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('tagihan_id')->references('id')->on('tagihans')->onDelete('cascade');
         });
     }

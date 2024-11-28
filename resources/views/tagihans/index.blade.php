@@ -28,7 +28,7 @@
         @forelse ($tagihans as $tagihan)
             <tr>
                 <td>{{ $tagihan->id }}</td>
-                <td>{{ $tagihan->pelanggan->nama }}</td>
+                <td>{{ $tagihan->nama }}</td>
                 <td>{{ $tagihan->bulan }}</td>
                 <td>{{ $tagihan->tahun }}</td>
                 <td>{{ number_format($tagihan->jumlah_tagihan, 2, ',', '.') }} IDR</td>
