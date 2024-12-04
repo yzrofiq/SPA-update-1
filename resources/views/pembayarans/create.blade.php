@@ -16,15 +16,7 @@
 
     <form action="{{ route('pembayarans.store') }}" method="POST">
         @csrf
-        <div class="form-group">
-            <label for="pelanggan_id">Pelanggan</label>
-            <select name="pelanggan_id" id="pelanggan_id" class="form-control" required>
-                <option value="">-- Pilih Pelanggan --</option>
-                @foreach ($pelanggans as $pelanggan)
-                    <option value="{{ $pelanggan->id }}">{{ $pelanggan->nama }}</option>
-                @endforeach
-            </select>
-        </div>
+      
 
         <div class="form-group">
             <label for="tagihan_id">Tagihan</label>

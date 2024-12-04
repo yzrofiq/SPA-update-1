@@ -38,27 +38,29 @@
                 <h3>Tagihan</h3>
                 <p>Kelola tagihan yang harus dibayar oleh pelanggan.</p>
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Pelanggan</th>
-                                <th>Jumlah Tagihan</th>
-                                <th>Status</th>
-                                <th>Tanggal Tagihan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($tagihans as $tagihan)
-                                <tr>
-                                    <td>{{ $tagihan->id }}</td>
-                                    <td>Rp. {{ number_format($tagihan->jumlah_tagihan, 2) }}</td>
-                                    <td>{{ $tagihan->status == 1 ? 'Lunas' : 'Belum Lunas' }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($tagihan->tanggal_tagihan)->format('d-m-Y') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>user_id</id>
+            <th>Jumlah Tagihan</th>
+            <th>Status</th>
+            <th>Tanggal Tagihan</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach($tagihans as $tagihan)
+            <tr>
+                <td>{{ $tagihan->id }}</td> <!-- Menampilkan ID Tagihan -->
+                <td>{{$tagihan->user_id}}</td>
+                <td>Rp. {{ number_format($tagihan->jumlah_tagihan, 2, ',', '.') }}</td> <!-- Format angka dengan pemisah ribuan -->
+                <td>{{ $tagihan->status == 1 ? 'Lunas' : 'Belum Lunas' }}</td> <!-- Menampilkan status -->
+                <td>{{ \Carbon\Carbon::parse($tagihan->created_at)->format('d-m-Y') }}</td> <!-- Format tanggal -->
+            </tr>
+        @endforeach
+    </tbody>
+</table>
+
                 </div>
             </div>
 
@@ -71,7 +73,7 @@
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Pelanggan</th>
+                               
                                 <th>Tagihan</th>
                                 <th>Tanggal Pembayaran</th>
                                 <th>Jumlah Bayar</th>
@@ -81,7 +83,7 @@
                             @foreach($pembayarans as $pembayaran)
                                 <tr>
                                     <td>{{ $pembayaran->id }}</td>
-                                    <td>{{ $pembayaran->pelanggan->nama }}</td>
+                                    
                                     <td>{{ $pembayaran->tagihan->id }}</td>
                                     <td>{{ \Carbon\Carbon::parse($pembayaran->tanggal_pembayaran)->format('d-m-Y') }}</td>
                                     <td>Rp. {{ number_format($pembayaran->jumlah_bayar, 2) }}</td>

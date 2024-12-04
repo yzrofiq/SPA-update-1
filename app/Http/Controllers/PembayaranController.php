@@ -1,102 +1,109 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pembayaran;
 use App\Models\Tagihan;
-use App\Models\Pelanggan; // Import the Pelanggan model
+use Illuminate\Support\Facades\Auth;
 
 class PembayaranController extends Controller
 {
     public function index()
     {
-        // Retrieve all payments with pagination
-        $pembayarans = Pembayaran::paginate(10); // Adjust the number per page as needed
+        // Mengambil data pembayaran dengan relasi tagihan
+        $pembayarans = Pembayaran::with('tagihan')->paginate(10);
         return view('pembayarans.index', compact('pembayarans'));
     }
 
     public function create()
     {
-        // Retrieve all customers and bills
-        $pelanggans = Pelanggan::all(); 
-        $tagihans = Tagihan::all(); 
-        return view('pembayarans.create', compact('pelanggans', 'tagihans'));
+        // Mengambil tagihan yang belum lunas
+        $tagihans = Tagihan::where('status', 0)->get();
+        return view('pembayarans.create', compact('tagihans'));
     }
-    
+
     public function store(Request $request)
     {
-        // Validate request data
+        // Validasi input
         $request->validate([
-            'user_id' => 'required|exists:user,id',
             'tagihan_id' => 'required|exists:tagihans,id',
             'tanggal_pembayaran' => 'required|date',
-            'jumlah_bayar' => 'required|numeric',
+            'jumlah_bayar' => 'required|numeric|min:0',
         ]);
 
-        // Save payment
+        // Mengambil data tagihan terkait
+        $tagihan = Tagihan::findOrFail($request->tagihan_id);
+
+        // Cek apakah tagihan sudah lunas
+        if ($tagihan->status == 1) {
+            return back()->withErrors('Tagihan ini sudah lunas.');
+        }
+
+        // Simpan data pembayaran
         Pembayaran::create([
-            'user_id' => $request->user_id,
+            'user_id' => Auth::id(), // Mengambil user ID yang sedang login
             'tagihan_id' => $request->tagihan_id,
             'tanggal_pembayaran' => $request->tanggal_pembayaran,
             'jumlah_bayar' => $request->jumlah_bayar,
         ]);
 
-        // Update the tagihan status to paid
-        $tagihan = Tagihan::find($request->tagihan_id);
-        $tagihan->status = 1; // Assuming 1 means paid
-        $tagihan->save();
+        // Update status tagihan menjadi lunas
+        $tagihan->update(['status' => 1]);
 
-        return redirect()->route('pembayarans.index')->with('success', 'Pembayaran berhasil');
+        return redirect()->route('pembayarans.index')->with('success', 'Pembayaran berhasil disimpan.');
     }
 
     public function edit($id)
     {
-        // Find the payment and related tagihan and pelanggan
+        // Mengambil data pembayaran berdasarkan ID
         $pembayaran = Pembayaran::findOrFail($id);
-        $pelanggans = Pelanggan::all(); 
-        $tagihans = Tagihan::all();
-        return view('pembayarans.edit', compact('pembayaran', 'pelanggans', 'tagihans'));
+
+        // Mengambil semua tagihan yang belum lunas
+        $tagihans = Tagihan::where('status', 0)->orWhere('id', $pembayaran->tagihan_id)->get();
+
+        return view('pembayarans.edit', compact('pembayaran', 'tagihans'));
     }
 
     public function update(Request $request, $id)
     {
-        // Validate request data
+        // Validasi input
         $request->validate([
-            'user_id' => 'required|exists:user,id',
             'tagihan_id' => 'required|exists:tagihans,id',
             'tanggal_pembayaran' => 'required|date',
-            'jumlah_bayar' => 'required|numeric',
+            'jumlah_bayar' => 'required|numeric|min:0',
         ]);
 
-        // Find the payment record
+        // Mengambil data pembayaran terkait
         $pembayaran = Pembayaran::findOrFail($id);
+        $tagihan = Tagihan::findOrFail($request->tagihan_id);
 
-        // Update payment details
+        // Update data pembayaran
         $pembayaran->update([
-            'user_id' => $request->user_id,
             'tagihan_id' => $request->tagihan_id,
             'tanggal_pembayaran' => $request->tanggal_pembayaran,
             'jumlah_bayar' => $request->jumlah_bayar,
         ]);
 
-        // Optionally update the tagihan status to paid again, if necessary
-        $tagihan = Tagihan::find($request->tagihan_id);
-        if ($tagihan) {
-            $tagihan->status = 1; // Assuming 1 means paid
-            $tagihan->save();
-        }
+        // Update status tagihan menjadi lunas
+        $tagihan->update(['status' => 1]);
 
-        return redirect()->route('pembayarans.index')->with('success', 'Pembayaran berhasil diperbarui');
+        return redirect()->route('pembayarans.index')->with('success', 'Pembayaran berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        // Find the payment record
+        // Mengambil data pembayaran
         $pembayaran = Pembayaran::findOrFail($id);
-        
-        // Delete the payment
+        $tagihan = $pembayaran->tagihan;
+
+        // Update status tagihan menjadi belum lunas jika pembayaran dihapus
+        if ($tagihan) {
+            $tagihan->update(['status' => 0]);
+        }
+
         $pembayaran->delete();
 
-        return redirect()->route('pembayarans.index')->with('success', 'Pembayaran berhasil dihapus');
+        return redirect()->route('pembayarans.index')->with('success', 'Pembayaran berhasil dihapus.');
     }
 }

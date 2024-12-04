@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'WaterPay') }}</title>
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
-/* General Reset */
+        /* General Reset */
         * {
             margin: 0;
             padding: 0;
@@ -19,13 +19,59 @@
 
         html, body {
             height: 100%;
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f7fc;
         }
 
-        .content .user-info .user-name {
-            margin-right: 15px;
-            font-size: 1rem;
-            color: #2C3E50;
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            background: #34495e;
+            padding-top: 30px;
+            color: #ecf0f1;
+            transition: width 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h4 {
+            color: #ffffff;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            color: #ecf0f1;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 8px 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .sidebar a i {
+            font-size: 1.2rem;
+        }
+
+        .sidebar a:hover {
+            background-color: #2c3e50;
+        }
+
+        /* Content */
+        .content {
+            margin-left: 260px;
+            padding: 20px;
+            background: #fafafa;
+            min-height: 100vh;
+            width: calc(100% - 260px); /* Adjust content width */
+            transition: margin-left 0.3s ease;
         }
 
         /* Dashboard Banner */
@@ -38,18 +84,7 @@
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
             border-radius: 16px;
             animation: fadeIn 1.2s ease;
-            width: 100%; /* Ensure it takes the full width */
-            max-width: 100%;
-            position: relative;
-            left: 0;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .dashboard-banner {
-                margin-left: 0; /* Remove left margin for smaller screens */
-                max-width: 100%; /* Allow the banner to take full width */
-            }
+            width: 100%;
         }
 
         .dashboard-banner h1 {
@@ -63,69 +98,9 @@
             margin-top: 15px;
         }
 
-        /* Sidebar Styling */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            position: fixed;
-            background: #34495E;
-            padding-top: 30px;
-            color: #ecf0f1;
-            transition: width 0.3s ease;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar h4 {
-            color: #ffffff;
-            text-align: center;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .sidebar a {
-            color: #ecf0f1;
-            font-weight: 500;
-            display: block;
-            padding: 15px 25px;
-            text-decoration: none;
-            border-radius: 8px;
-            margin: 8px 15px;
-            transition: background-color 0.3s ease;
-        }
-
-        .sidebar a:hover {
-            background-color: #2C3E50;
-        }
-
-        /* Content */
-        .content {
-            margin-left: 260px; /* Menyesuaikan dengan lebar sidebar */
-            padding: 20px;      /* Memberikan ruang dalam konten */
-            background: #FAFAFA;
-            min-height: 100vh;
-            width: 100%; /* Lebar penuh minus sidebar */
-        }
-
-        @media (max-width: 1024px) {
-            .content {
-                margin-left: 0;
-                padding: 15px;
-            }
-        }
-
         /* Buttons */
         .btn-primary {
             background-color: #3498db;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-secondary {
-            background-color: #A6AEBF;
             color: #fff;
             padding: 10px 20px;
             border: none;
@@ -138,13 +113,27 @@
             background-color: #2980b9;
         }
 
-        /* Fade-in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                box-shadow: none;
+            }
+
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 15px;
+            }
+
+            .dashboard-banner {
+                margin-left: 0; /* Remove left margin for smaller screens */
+                max-width: 100%; /* Allow the banner to take full width */
+            }
         }
 
-        /* Improve sidebar on small screens */
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
@@ -158,9 +147,14 @@
             }
         }
 
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
     </style>
 </head>
-
 <body>
     <div id="app">
         @auth
@@ -168,12 +162,16 @@
                 <!-- Sidebar -->
                 <div class="sidebar">
                     <h4>Dashboard Pengguna</h4>
-                    <a href="{{ route('user.dashboard') }}">Home</a>
-                    <a href="{{ route('user.tagihans.index') }}">Tagihan</a>
-                    <!-- <a href="">Tagihan</a>
-                    <a href="">Riwayat Pembayaran</a> -->
+                    <a href="{{ route('user.dashboard') }}">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="{{ route('user.tagihans.index') }}">
+                        <i class="fas fa-file-invoice-dollar"></i> Tagihan
+                    </a>
                     <a href="{{ route('logout') }}"
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
 
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
@@ -183,10 +181,9 @@
                 <!-- Main Content -->
                 <div class="content">
                     <div class="dashboard-banner">
-                        <h1>Selamat Datang di Waterpay!</h1>
+                        <h1>Selamat Datang di Waterpay, {{ auth()->user()->name }}!</h1>
                         <p>Kelola Tagihan dan Pembayaran Anda dengan mudah.</p>
                     </div>
-
                     @yield('content')
                 </div>
             </div>
