@@ -10,13 +10,13 @@
         </div>
     @endif
 
-    <a href="{{ url('tagihans/create') }}" class="btn btn-primary mb-3">Tambah Tagihan</a>
+    <a href="{{ url('admin/tagihans/create') }}" class="btn btn-primary mb-3">Tambah Tagihan</a>
 
     <table class="table table-bordered">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Pelanggan</th>
+                <th>User_id</th>
                 <th>Bulan</th>
                 <th>Tahun</th>
                 <th>Jumlah Tagihan</th>
@@ -28,7 +28,7 @@
         @forelse ($tagihans as $tagihan)
             <tr>
                 <td>{{ $tagihan->id }}</td>
-                <td>{{ $tagihan->nama }}</td>
+                <td>{{ $tagihan->user_id }}</td>
                 <td>{{ $tagihan->bulan }}</td>
                 <td>{{ $tagihan->tahun }}</td>
                 <td>{{ number_format($tagihan->jumlah_tagihan, 2, ',', '.') }} IDR</td>

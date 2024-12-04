@@ -29,7 +29,7 @@
                                 <td>{{ $tagihan->bulan }} - {{ $tagihan->tahun }}</td>
                                 <td>
                                     @if($tagihan->status == 0)
-                                        <a href="{{ route('user.payment.create', $tagihan->id) }}" class="btn btn-primary">Bayar</a>
+                                    <span class="text-success">Belum Lunas</span>
                                     @else
                                         <span class="text-success">Tagihan Lunas</span>
                                     @endif
@@ -45,36 +45,6 @@
             </div>
         </div>
 
-        <!-- Pembayaran Card -->
-        <div class="card pembayaran-card">
-            <h3>Riwayat Pembayaran</h3>
-            <p>Transaksi pembayaran yang telah Anda lakukan.</p>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tagihan</th>
-                            <th>Tanggal Pembayaran</th>
-                            <th>Jumlah Bayar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($pembayarans as $pembayaran)
-                            <tr>
-                                <td>{{ $pembayaran->id }}</td>
-                                <td>{{ $pembayaran->tagihan->id }}</td>
-                                <td>{{ \Carbon\Carbon::parse($pembayaran->created_at)->format('d-m-Y') }}</td>
-                                <td>Rp. {{ number_format($pembayaran->amount, 2) }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center">Tidak ada riwayat pembayaran yang ditemukan.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 </div>

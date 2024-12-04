@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'WaterPay') }}</title>
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
-        /* General Reset */
+/* General Reset */
         * {
             margin: 0;
             padding: 0;
@@ -20,6 +20,12 @@
         html, body {
             height: 100%;
             font-family: 'Nunito', sans-serif;
+        }
+
+        .content .user-info .user-name {
+            margin-right: 15px;
+            font-size: 1rem;
+            color: #2C3E50;
         }
 
         /* Dashboard Banner */
@@ -32,9 +38,8 @@
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
             border-radius: 16px;
             animation: fadeIn 1.2s ease;
-            width: 100%;
-            max-width: calc(100%);
-            margin-left: 260px;
+            width: 100%; /* Ensure it takes the full width */
+            max-width: 100%;
             position: relative;
             left: 0;
         }
@@ -42,8 +47,8 @@
         /* Responsive Design */
         @media (max-width: 1024px) {
             .dashboard-banner {
-                margin-left: 0;
-                max-width: 100%;
+                margin-left: 0; /* Remove left margin for smaller screens */
+                max-width: 100%; /* Allow the banner to take full width */
             }
         }
 
@@ -94,10 +99,11 @@
 
         /* Content */
         .content {
-            margin-left: 260px;
-            padding: 30px;
+            margin-left: 260px; /* Menyesuaikan dengan lebar sidebar */
+            padding: 20px;      /* Memberikan ruang dalam konten */
             background: #FAFAFA;
             min-height: 100vh;
+            width: 100%; /* Lebar penuh minus sidebar */
         }
 
         @media (max-width: 1024px) {
@@ -110,6 +116,16 @@
         /* Buttons */
         .btn-primary {
             background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary {
+            background-color: #A6AEBF;
             color: #fff;
             padding: 10px 20px;
             border: none;
@@ -144,6 +160,7 @@
 
     </style>
 </head>
+
 <body>
     <div id="app">
         @auth
@@ -152,6 +169,9 @@
                 <div class="sidebar">
                     <h4>Dashboard Pengguna</h4>
                     <a href="{{ route('user.dashboard') }}">Home</a>
+                    <a href="{{ route('user.tagihans.index') }}">Tagihan</a>
+                    <!-- <a href="">Tagihan</a>
+                    <a href="">Riwayat Pembayaran</a> -->
                     <a href="{{ route('logout') }}"
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
 
@@ -163,7 +183,7 @@
                 <!-- Main Content -->
                 <div class="content">
                     <div class="dashboard-banner">
-                        <h1>Selamat Datang di Dashboard Pengguna</h1>
+                        <h1>Selamat Datang di Waterpay!</h1>
                         <p>Kelola Tagihan dan Pembayaran Anda dengan mudah.</p>
                     </div>
 

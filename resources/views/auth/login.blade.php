@@ -2,14 +2,27 @@
 
 @section('content')
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh; background: url('/images/background.jpg') center center/cover;">
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
     <div class="row w-100">
         <div class="col-md-8 col-lg-6 mx-auto">
             <div class="card shadow-lg border-0 rounded-lg" style="background-color: #ffffffaa;">
-                <div class="card-header text-center p-4" style="background-color: #004d40;">
-                    <h3 class="text-white mb-0">{{ __('Welcome Back!') }}</h3>
+
+                <div class="card-header text-center p-4" style="background-color: #4A628A;">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <a href="{{ route('home') }}" style="text-decoration: none; color:white;"><i class="bi bi-arrow-left-circle" style="font-size: 2.5rem;"></i></a>
+                        </div>
+                        <div class="col-8">
+                            <h3 class="text-white mb-0">{{ __('Welcome Back!') }}</h3>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="card-body p-5" style="background-color: #e0f2f1;">
+                <div class="card-body p-5" style="background-color: #C4E1F6;">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 
@@ -41,7 +54,7 @@
 
                         <!-- Submit Button -->
                         <div class="d-flex justify-content-center align-items-center">
-                            <button type="submit" class="btn btn-primary w-100" style="background-color: #00796b; border-radius: 8px;">
+                            <button type="submit" class="btn btn-primary w-100" style="background-color: #4A628A; border-radius: 8px;">
                                 {{ __('Login') }}
                             </button>
                         </div>
@@ -78,7 +91,7 @@
     /* Card Styling */
     .card {
         border-radius: 20px;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: #4A628A;
     }
 
     /* Input Styling */
@@ -94,7 +107,7 @@
 
     /* Button Styling */
     .btn-primary {
-        background-color: #00796b;
+        background-color: #4A628A;
         font-weight: bold;
         padding: 12px 20px;
         color: #fff;

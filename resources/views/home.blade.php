@@ -52,7 +52,6 @@
                             @foreach($tagihans as $tagihan)
                                 <tr>
                                     <td>{{ $tagihan->id }}</td>
-                                    <td>{{ $tagihan->pelanggan->nama }}</td>
                                     <td>Rp. {{ number_format($tagihan->jumlah_tagihan, 2) }}</td>
                                     <td>{{ $tagihan->status == 1 ? 'Lunas' : 'Belum Lunas' }}</td>
                                     <td>{{ \Carbon\Carbon::parse($tagihan->tanggal_tagihan)->format('d-m-Y') }}</td>

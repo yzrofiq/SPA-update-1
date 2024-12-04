@@ -8,6 +8,7 @@ use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -52,6 +53,9 @@ class RegisterController extends Controller
         Auth::login($user);
 
         // Redirect ke halaman utama (atau sesuai rute yang diinginkan)
-        return redirect()->route('home');
+        event(new Registered($user));
+
+    // Redirect ke halaman pemberitahuan
+    return redirect()->route('verification.notice');
     }
 }

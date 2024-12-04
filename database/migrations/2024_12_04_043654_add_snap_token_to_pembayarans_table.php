@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id(); // BIGINT UNSIGNED PRIMARY KEY
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->timestamps();
+        Schema::table('pembayarans', function (Blueprint $table) {
+            $table->string('snap_token')->nullable()->after('jumlah_bayar'); // Tambahkan kolom snap_token setelah jumlah_bayar
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::table('pembayarans', function (Blueprint $table) {
+            $table->dropColumn('snap_token');
+        });
     }
 };

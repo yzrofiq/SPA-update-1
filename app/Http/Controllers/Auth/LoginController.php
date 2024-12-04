@@ -22,11 +22,11 @@ class LoginController extends Controller
     use AuthenticatesUsers;
 
     /**
-     * Where to redirect users after login.
+     * Redirect users after login based on their role.
      *
-     * @var string
+     * @var string|null
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = null;
 
     /**
      * Create a new controller instance.
@@ -47,6 +47,7 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
+        // Redirect based on user role
         if ($user->role === 'admin') {
             return redirect('/admin/dashboard');
         }
@@ -54,5 +55,26 @@ class LoginController extends Controller
         if ($user->role === 'user') {
             return redirect('/user/dashboard');
         }
+
+        // Default fallback redirect if role is undefined or invalid
+        return redirect('/home');
+    }
+
+    /**
+     * Override logout method to prevent returning to login page.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        // Redirect to a specific page (e.g., homepage) after logout
+        return redirect('/');
     }
 }

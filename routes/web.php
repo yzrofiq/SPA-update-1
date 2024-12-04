@@ -9,6 +9,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\TagihanController;
+use App\Http\Controllers\UserBayarController;
+use App\Http\Controllers\UserTagihanController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\PaymentController;
 
@@ -30,10 +32,10 @@ Auth::routes();
 
 // Routes for authenticated users
 Route::middleware(['auth'])->group(function () {
-    // Dashboard redirection
+    // Dashboard route
     Route::get('/home', [HomeController::class, 'index'])->name('dashboard');
 
-    // Admin-specific routes
+    // Admin-specific routes (admin role check)
     Route::middleware(['role:admin'])->prefix('admin')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
@@ -51,6 +53,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pelanggans/filter', [PelangganController::class, 'filterByAddress'])->name('pelanggans.filter');
         Route::get('/pelanggans/sort/{order}', [PelangganController::class, 'sortByName'])->name('pelanggans.sort');
 
+
+Route::resource('tagihans', TagihanController::class);
         // Manage Tagihan (Invoices)
         Route::resource('tagihans', TagihanController::class)->except(['show'])->names([
             'index' => 'tagihans.index',
@@ -72,46 +76,51 @@ Route::middleware(['auth'])->group(function () {
             'update' => 'pembayarans.update',
             'destroy' => 'pembayarans.destroy',
         ]);
+        Route::get('tagihans/create', [TagihanController::class, 'create'])->name('tagihans.create');
+        Route::post('tagihans', [TagihanController::class, 'store'])->name('tagihans.store');
+        
+
     });
 
-    // User-specific routes
+    // User-specific routes (user role check)
     Route::middleware(['role:user'])->prefix('user')->group(function () {
         Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
 
-        // View Tagihan (Invoices)
-        Route::resource('tagihans', TagihanController::class)->only(['index', 'show'])->names([
-            'index' => 'user.tagihans.index',
-            'show' => 'user.tagihans.show',
-        ]);
+        // User Tagihan (Invoices)
+        Route::get('/tagihans', [UserTagihanController::class, 'index'])->name('user.tagihans.index');
+        Route::get('/tagihans/{id}', [UserTagihanController::class, 'show'])->name('user.tagihans.show');
 
-        // View Pembayaran (Payments)
-        Route::resource('pembayarans', PembayaranController::class)->only(['index', 'show'])->names([
-            'index' => 'user.pembayarans.index',
-            'show' => 'user.pembayarans.show',
-        ]);
+        // User Bayar (Payment creation)
+        Route::get('/pembayarans', [UserBayarController::class, 'index'])->name('user.pembayarans.index');
+        Route::get('/bayar/{id}', [UserBayarController::class, 'create'])->name('user.bayar.create');
+        Route::get('/bayar/{tagihanId}', [UserBayarController::class, 'createPayment'])->name('user.payment.create');
+        Route::post('/bayar/{tagihanId}', [UserBayarController::class, 'storePayment'])->name('user.payment.store');
+        Route::post('/user/bayar/verify/{tagihanId}', [UserBayarController::class, 'verifyPayment']);
+        Route::post('/tagihans/{id}/update-status', [UserBayarController::class, 'updateStatus'])
+    ->name('user.tagihan.update-status')
+    ->middleware('auth');
     });
-
-    // Shared routes
-    Route::get('/bayar/{tagihan}', [PaymentController::class, 'create'])->name('user.payment.create');
-    Route::post('/bayar/{tagihan}', [PaymentController::class, 'store'])->name('user.payment.store');
-    Route::get('/pembayaran/{tagihan}', [PembayaranController::class, 'create'])->name('user.pembayaran.create');
-    Route::post('/pembayaran/{tagihan}', [PembayaranController::class, 'store'])->name('user.pembayaran.store');
-});
-// Routes requiring authentication
-Route::middleware(['auth'])->group(function () {
-    Route::resource('pelanggans', PelangganController::class);
-    Route::resource('tagihans', TagihanController::class);
-    Route::resource('pembayarans', PembayaranController::class);
-
-    // Export data pelanggan ke CSV
-    Route::get('/pelanggans/export', [PelangganController::class, 'exportCSV'])->name('pelanggans.export');
-
-    // Filter berdasarkan alamat
-    Route::get('/pelanggans/filter', [PelangganController::class, 'filterByAddress'])->name('pelanggans.filter');
-
-    // Pengurutan berdasarkan nama
-    Route::get('/pelanggans/sort/{order}', [PelangganController::class, 'sortByName'])->name('pelanggans.sort');
 });
 
-// Dashboard route
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
+// Rute notifikasi verifikasi
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+
+// Rute untuk verifikasi email
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect()->route('user.dashboard');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Rute untuk mengirim ulang email verifikasi
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Link verifikasi baru telah dikirim ke email Anda.');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
+
+Route::post('/user/tagihan/{id}/update-status', [UserBayarController::class, 'updateStatus'])
+    ->name('user.tagihan.update-status');

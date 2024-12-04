@@ -10,62 +10,68 @@ class UserDashboardController extends Controller
 {
     public function index()
     {
-        // Fetch the authenticated user
+        // Ambil data pengguna yang sedang login
         $user = auth()->user();
         
-        // Fetch tagihan (bills) and pembayaran (payments) related to the user
+        // Ambil daftar tagihan dan pembayaran milik pengguna
         $tagihans = Tagihan::where('user_id', $user->id)->get();
         $pembayarans = Pembayaran::where('user_id', $user->id)->get();
 
-        // Pass the data to the view
+        // Kirim data ke view dashboard
         return view('user.dashboard', compact('tagihans', 'pembayarans'));
     }
 
     public function createPayment($tagihanId)
     {
-        // Fetch the authenticated user
+        // Ambil data pengguna
         $user = auth()->user();
 
-        // Fetch the tagihan (bill) based on the provided tagihan ID
-        $tagihan = Tagihan::where('id', $tagihanId)->where('user_id', $user->id)->firstOrFail();
+        // Cari tagihan berdasarkan ID dan user ID
+        $tagihan = Tagihan::where('id', $tagihanId)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
 
-        // Pass the data to the view where the user can pay
+        // Kirim data ke halaman pembayaran
         return view('user.payment.create', compact('tagihan'));
     }
 
     public function storePayment(Request $request, $tagihanId)
     {
-        // Fetch the authenticated user
-        $user = auth()->user();
-
-        // Validate the payment request
+        // Validasi input
         $request->validate([
             'amount' => 'required|numeric|min:1',
-            'payment_method' => 'required|string', // Assuming payment method is required
+            'payment_method' => 'required|string', // Metode pembayaran
         ]);
 
-        // Fetch the tagihan (bill)
-        $tagihan = Tagihan::where('id', $tagihanId)->where('user_id', $user->id)->firstOrFail();
+        // Ambil data pengguna
+        $user = auth()->user();
 
-        // Check if the payment is for the correct tagihan
+        // Cari tagihan yang sesuai
+        $tagihan = Tagihan::where('id', $tagihanId)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        // Periksa apakah tagihan sudah lunas
         if ($tagihan->status == 1) {
-            return redirect()->route('user.dashboard')->with('error', 'Tagihan sudah lunas!');
+            return redirect()->route('user.dashboard')
+                ->with('error', 'Tagihan sudah lunas!');
         }
 
-        // Create the payment record
+        // Simpan data pembayaran
         Pembayaran::create([
             'user_id' => $user->id,
             'tagihan_id' => $tagihan->id,
             'amount' => $request->amount,
             'payment_method' => $request->payment_method,
-            'status' => 'pending',
+            'status' => 'completed', // Tandai pembayaran selesai
         ]);
 
-        // Update the tagihan status to "paid"
+        // Perbarui status tagihan menjadi lunas
         $tagihan->status = 1;
         $tagihan->save();
 
-        // Redirect the user to their dashboard with success message
-        return redirect()->route('user.dashboard')->with('success', 'Pembayaran berhasil dilakukan!');
+        // Redirect dengan pesan sukses
+        return redirect()->route('user.dashboard')
+            ->with('success', 'Pembayaran berhasil dilakukan!');
     }
 }

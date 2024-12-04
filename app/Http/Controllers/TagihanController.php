@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Tagihan; // Import the Tagihan model
-use App\Models\Pelanggan; // Import the Pelanggan model
-use Illuminate\Support\Facades\Auth;
-
+use App\Models\Tagihan;
+use App\Models\Pelanggan;
 
 class TagihanController extends Controller
 {
@@ -14,63 +12,83 @@ class TagihanController extends Controller
     {
         $tagihans = Tagihan::with('pelanggan')->paginate(10); // Paginate results
         return view('tagihans.index', compact('tagihans'));
+
+        
     }
 
     public function create()
     {
-        $pelanggans = Pelanggan::all(); // Retrieve all customers
+        // Ambil data pelanggan
+        $pelanggans = Pelanggan::all();
+        
+        // Tampilkan form tambah tagihan
         return view('tagihans.create', compact('pelanggans'));
     }
-    
+    public function edit($id)
+    {
+        // Temukan tagihan berdasarkan ID
+        $tagihan = Tagihan::findOrFail($id);
 
+        // Ambil data pelanggan untuk dropdown
+        $pelanggans = Pelanggan::all();
+
+        return view('tagihans.edit', compact('tagihan', 'pelanggans'));
+    }
     public function store(Request $request)
-{
-    $request->validate([
-        'pelanggan_id' => 'required|exists:pelanggans,id',
-        'bulan' => 'required|integer|min:1|max:12',
-        'tahun' => 'required|integer|min:2000|max:' . date('Y'),
-        'jumlah_tagihan' => 'required|numeric|min:0',
-        'status' => 'required|in:0,1',  // Ensure status is either 0 or 1
-    ]);
+    {
+        $request->validate([
+            'pelanggan_id' => 'required|exists:pelanggans,id',
+            'bulan' => 'required|integer|min:1|max:12',
+            'tahun' => 'required|integer|min:2000|max:' . date('Y'),
+            'jumlah_tagihan' => 'required|numeric|min:0',
+            'status' => 'required|in:0,1', // Ensure status is either 0 or 1
+        ]);
 
-    // Use the authenticated user's ID
-    $userId = Auth::id(); 
+        // Ambil user_id berdasarkan pelanggan yang dipilih
+        $pelanggan = Pelanggan::findOrFail($request->pelanggan_id);
+        $userId = $pelanggan->user_id;
 
-    // Save tagihan data
-    Tagihan::create([
-        'user_id' => $userId,  // Use logged-in user's ID
-        'bulan' => $request->bulan,
-        'tahun' => $request->tahun,
-        'jumlah_tagihan' => $request->jumlah_tagihan,
-        'status' => $request->status,
-    ]);
+        // Simpan data tagihan
+        Tagihan::create([
+            'pelanggan_id' => $request->pelanggan_id,
+            'user_id' => $userId, // Ambil user_id dari pelanggan
+            'bulan' => $request->bulan,
+            'tahun' => $request->tahun,
+            'jumlah_tagihan' => $request->jumlah_tagihan,
+            'status' => $request->status,
+        ]);
 
-    return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil ditambahkan.');
-}
+        return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil ditambahkan.');
+    }
 
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'pelanggan_id' => 'required|exists:pelanggans,id', // Validasi pelanggan_id
+            'bulan' => 'required|integer|min:1|max:12',
+            'tahun' => 'required|integer|min:2000|max:' . date('Y'),
+            'jumlah_tagihan' => 'required|numeric|min:0',
+            'status' => 'required|in:0,1', // Ensure status is either 0 or 1
+        ]);
 
-public function update(Request $request, $id)
-{
-    $request->validate([
-        'user_id' => 'required|exists:users,id',  // Validasi untuk user_id
-        'bulan' => 'required|integer|min:1|max:12',
-        'tahun' => 'required|integer|min:2000|max:' . date('Y'),
-        'jumlah_tagihan' => 'required|numeric|min:0',
-        'status' => 'required|in:0,1',  // Ensure status is either 0 or 1
-    ]);
+        $tagihan = Tagihan::findOrFail($id); // Pastikan tagihan ada
 
-    $tagihan = Tagihan::findOrFail($id); // Ensure the tagihan exists
-    $tagihan->update([
-        'user_id' => $request->user_id,
-        'bulan' => $request->bulan,
-        'tahun' => $request->tahun,
-        'jumlah_tagihan' => $request->jumlah_tagihan,
-        'status' => $request->status,  // Update the status here
-    ]);
+        // Ambil user_id dari pelanggan yang dipilih
+        $pelanggan = Pelanggan::findOrFail($request->pelanggan_id);
+        $userId = $pelanggan->user_id;
 
-    return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil diperbarui.');
-}
+        // Update data tagihan
+        $tagihan->update([
+            'pelanggan_id' => $request->pelanggan_id,
+            'user_id' => $userId, // Perbarui user_id
+            'bulan' => $request->bulan,
+            'tahun' => $request->tahun,
+            'jumlah_tagihan' => $request->jumlah_tagihan,
+            'status' => $request->status, // Update the status here
+        ]);
 
+        return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil diperbarui.');
+    }
 
     public function destroy($id)
     {
@@ -90,7 +108,7 @@ public function update(Request $request, $id)
         if ($request->tahun) {
             $query->where('tahun', $request->tahun);
         }
-        if ($request->status !== null) {  // Ensure status filter works even for "0"
+        if ($request->status !== null) { // Ensure status filter works even for "0"
             $query->where('status', $request->status);
         }
 
@@ -107,4 +125,5 @@ public function update(Request $request, $id)
 
         return redirect()->route('tagihans.index')->with('success', 'Tagihan berhasil ditandai lunas');
     }
+    
 }

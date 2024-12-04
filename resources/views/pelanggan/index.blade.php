@@ -23,6 +23,7 @@
     <table class="table table-striped table-bordered table-hover">
         <thead class="table-dark">
             <tr>
+            <th>User_id</th>
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Nomor Telepon</th>
@@ -32,6 +33,7 @@
         <tbody>
     @forelse ($pelanggans as $p)
         <tr>
+        <td>{{ $p->user_id }}</td>
             <td>{{ $p->nama }}</td>
             <td>{{ $p->alamat }}</td>
             <td>{{ $p->nomor_telepon }}</td>

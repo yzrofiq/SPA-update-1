@@ -31,4 +31,17 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'midtrans' => [
+        'server_key' => env('MIDTRANS_SERVER_KEY'),
+        'client_key' => env('MIDTRANS_CLIENT_KEY'),
+        'api_url' => 'https://api.sandbox.midtrans.com',
+        'is_production' => env('MIDTRANS_IS_PRODUCTION', false),
+    ],
+
+    'guzzle' => [
+        'timeout' => 10,
+        'base_uri' => env('MIDTRANS_API_URL'),
+    ],
+    
+
 ];
